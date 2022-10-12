@@ -4,6 +4,7 @@
 use App\Http\Controllers\Admin\CustomizeController;
 use App\Http\Controllers\Admin\MenuBuilderController;
 use App\Http\Controllers\Admin\SettingsController;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Admin\TagController;
 use App\Http\Controllers\Admin\PageController;
@@ -50,4 +51,24 @@ Route::prefix('admin')->name('admin.')->middleware(['auth'])->group(function () 
     Route::group(['prefix' => 'laravel-filemanager', 'middleware' => ['web']], function () {
         Lfm::routes();
     });
+});
+
+Route::get('/admin/setup/all', function () {
+    $admin = \App\Models\User::where('is_super', true)->first();
+    if (!$admin) {
+        \App\Models\User::create([
+            'name' => 'Limon Rana',
+            'email' => 'admin@gmail.com',
+            'password' => Hash::make('Admin@1122'),
+            'is_super' => true
+        ]);
+        // Create Category
+        \App\Models\Category::create([
+            'name' => 'Uncategorized',
+            'slug' => 'uncategorized',
+            'created_by' => 1,
+            'updated_by' => 1
+        ]);
+    }
+    return 'Setup All Data';
 });
